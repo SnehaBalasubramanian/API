@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- <h1>Discover Cultural Gems Around the Globe</h1> -->
+    <div class="container">
+        <div class="search-wapper">
+            <h1 id="country">Country</h1>
+            <input type="text" id="inp" placeholder="Enter the country name">
+            <button id="button">Search</button>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let count = document.getElementById("country");
+        let inp = document.getElementById("inp");
+        let button = document.getElementById("button");
+        let result = document.getElementById("result");
+
+        button.addEventListener("click", () => {
+            let countryName = inp.value;
+            fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fullText=true`)
+            .then(response => response.json())
+            .then(data => {
+                let countryData = data[0];
+                let currencyCode = Object.keys(countryData.currencies)[0];
+                let currencyName = countryData.currencies[currencyCode].name;
+                let languages = Object.values(countryData.languages).join(", ");
+
+                result.innerHTML = `
+                    <h2>${countryData.name.common}</h2>
+                    <div class="wrapper">
+                        <div class="data-wrapper">
+                            <h4>Capital:</h4>
+                            <span>${countryData.capital[0]}</span>
+                        </div>
+                    </div>
+                    <div class="wrapper">
+                        <div class="data-wrapper">
+                            <h4>Continent:</h4>
+                            <span>${countryData.continents[0]}</span>
+                        </div>
+                    </div>
+                    <div class="wrapper">
+                        <div class="data-wrapper">
+                            <h4>Population:</h4>
+                            <span>${countryData.population}</span>
+                        </div>
+                    </div>
+                    <div class="wrapper">
+                        <div class="data-wrapper">
+                            <h4>Currency:</h4>
+                            <span>${currencyName} - ${currencyCode}</span>
+                        </div>
+                    </div>
+                    <div class="wrapper">
+                        <div class="data-wrapper">
+                            <h4>Common Languages:</h4>
+                            <span>${languages}</span>
+                        </div>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error fetching country data:', error);
+                result.innerHTML = `<p>Country not found or an error occurred. Please try again.</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
